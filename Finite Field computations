@@ -1,0 +1,96 @@
+"""for a finite field F, and a function f. Find all points (x,y,z,w)
+   such that f(x,y,z,w) = c. 
+   NOTE: can take up to 4 dimensions. 
+"""
+import inspect
+def soln4(F,c,f,p=0):
+    coord = []
+    n = len(inspect.getargspec(f).args)
+    if n == 2:
+        for x in F:
+            for y in F:
+                if(f(x,y) == c):
+                    coord.append((x,y))
+                    if p != 0:
+                        print "(",x,",",y,")"
+    elif n == 3:
+        for x in F:
+            for y in F:
+                for z in F:
+                        if (f(x,y,z) == c):
+                            coord.append((x,y,z))
+                            if p != 0:
+                                print "(",x,",",y,",",z,")"
+    elif n == 4:
+        for x in F:
+            for y in F:
+                for z in F:
+                    for w in F:
+                        if (f(x,y,z,w) == c):
+                            coord.append((x,y,z,w))
+                            if p != 0:
+                                print "(",x,",",y,",",z,",",w,")"
+    return coord
+    
+    
+# example 
+def f2(x,y):
+    return x^2 + y^2
+
+def f3(x,y,z):
+    return x^2 + y^2 + z^2 -x*y*z - 2
+
+def f4(x,y,z,w):
+    return x^2 + y^2 + z^2 + w^2
+    
+# calling soln4 with f2: 
+soln4(GF(3),1,f2,2)
+--> (0,1)
+--> (0,2)
+--> (1,0)
+--> (2,0)
+
+
+# checking whether three points are collinear: 
+
+def lin(u,v,w):
+    foo = True
+    for i in range(len(u)):
+        for j in range(i+1,len(u)):
+            foo = foo and ((v[i]-u[i])*(w[j]-u[j])-(v[j]-u[j])*(w[i]-u[i]) == 0)
+            if foo == False:
+                break
+        if foo == False:
+            break
+    # example, for 4-D case: 
+    '''((v[0]-u[0])*(w[1]-u[1])-(v[1]-u[1])*(w[0]-u[0]) == 0
+    and (v[0]-u[0])*(w[2]-u[2])-(v[2]-u[2])*(w[0]-u[0]) == 0
+    and (v[0]-u[0])*(w[3]-u[3])-(v[3]-u[3])*(w[0]-u[0]) == 0
+    and (v[1]-u[1])*(w[2]-u[2])-(v[2]-u[2])*(w[1]-u[1]) == 0
+    and (v[1]-u[1])*(w[3]-u[3])-(v[3]-u[3])*(w[1]-u[1]) == 0
+    and (v[2]-u[2])*(w[3]-u[3])-(v[3]-u[3])*(w[2]-u[2]) == 0)'''
+
+    return foo
+    
+# return all three colinear points in a list of points l
+def qlin(l):
+    coord = []
+    for x in range(len(l)):
+        for y in range(x+1,len(l)):
+            for z in range(y+1,len(l)):
+                if(lin(l[x],l[y],l[z])):
+                    coord.append((l[x],l[y],l[z]))
+    return coord
+
+# prints all three colinear points in a list of points coord, and return its length
+def ls(coord):
+    for i in range(len(coord)):
+        for j in range(len(coord[i])):
+            print coord[i][j]
+        print
+        print
+    return len(coord)
+
+#---------plotting the points from soln4----------
+coord = soln4(GF(3),1,f2); 
+show(points(coord,rgbcolor=(0,0, 0), pointsize=50),aspect_ratio = 1)
